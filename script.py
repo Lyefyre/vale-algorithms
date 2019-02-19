@@ -10,7 +10,7 @@ def build_maze(m, n, swag):
         grid.append(row)
     start_i = randint(0, m - 1)
     start_j = randint(0, n - 1)
-    grid[randint(0, m - 1)][randint(0, n - 1)] = 'empty'
+    grid[start_i][start_j] = 'Start'
     mow(grid, start_i, start_j)
     explore_maze(grid, start_i, start_j, swag)
     return grid
@@ -21,8 +21,8 @@ def print_maze(grid):
         printable_row = ''
         for cell in row:
             if cell == 'wall':
-                char = '/'
-            elif cell == 'emtpy':
+                char = '|'
+            elif cell == 'empty':
                 char = ' '
             else:
                 char = cell[0]
@@ -36,33 +36,37 @@ def mow(grid, i, j):
         directions_index = randint(0, len(directions) - 1)
         direction = directions.pop(directions_index)
         if direction == 'U':
-            if i - 2 < 0:
+            if i - 4 < 0:
                 continue
-            elif grid[i - 2][j] == 'wall':
+            elif grid[i - 3][j] == 'wall':
                 grid[i - 1][j] = 'empty'
                 grid[i - 2][j] = 'empty'
-                mow(grid, i - 2, j)
+                grid[i - 3][j] = 'empty'
+                mow(grid, i - 3, j)
         elif direction == 'D':
-            if i + 2 >= len(grid):
+            if i + 4 >= len(grid):
                 continue
-            elif grid[i + 2][j] == 'wall':
-                grid[i + 1][j] = 'emtpy'
-                grid[i + 2][j] = 'emtpy'
-                mow(grid, i + 2, j)
+            elif grid[i + 3][j] == 'wall':
+                grid[i + 1][j] = 'empty'
+                grid[i + 2][j] = 'empty'
+                grid[i + 3][j] = 'empty'
+                mow(grid, i + 3, j)
         elif direction == 'L':
-            if j - 2 < 0:
+            if j - 4 < 0:
                 continue
-            elif grid[i][j - 2] == 'wall':
-                grid[i][j - 1] = 'emtpy'
-                grid[i][j - 2] = 'emtpy'
-                mow(grid, i, j - 2)
+            elif grid[i][j - 3] == 'wall':
+                grid[i][j - 1] = 'empty'
+                grid[i][j - 2] = 'empty'
+                grid[i][j - 3] = 'empty'
+                mow(grid, i, j - 3)
         else:
-            if j + 2 >= len(grid[0]):
+            if j + 4 >= len(grid[0]):
                 continue
-            elif grid[i][j + 2] == 'wall':
-                grid[i][j + 1] = 'emtpy'
-                grid[i][j + 2] = 'emtpy'
-                mow(grid, i, j + 2)
+            elif grid[i][j + 3] == 'wall':
+                grid[i][j + 1] = 'empty'
+                grid[i][j + 2] = 'empty'
+                grid[i][j + 3] = 'empty'
+                mow(grid, i, j + 3)
 
 
 def explore_maze(grid, start_i, start_j, swag):
@@ -71,9 +75,9 @@ def explore_maze(grid, start_i, start_j, swag):
     directions = ['U', 'D', 'L', 'R']
     while bfs_queue:
         i, j = bfs_queue.pop(0)
-        if grid[i][j] != 'start' and randint(1, 10) == 1:
+        if grid[i][j] != 'Start' and randint(1, 10) == 1:
             grid[i][j] = swag[randint(0, len(swag) - 1)]
-            grid_copy[i][j] = 'visited'
+        grid_copy[i][j] = 'visited'
         for direction in directions:
             explore_i = i
             explore_j = j
@@ -85,9 +89,12 @@ def explore_maze(grid, start_i, start_j, swag):
                 explore_j = j - 1
             else:
                 explore_j = j + 1
-        if explore_i < 0 or explore_j < 0 or explore_i >= len(grid) or explore_j >= len(grid[0]):
-            continue
-        elif grid_copy[explore_i][explore_j] != 'visited' and grid_copy[explore_i][explore_j] != 'wall':
-            bfs_queue.append([explore_i, explore_j])
-        grid[i][j] = 'end'
-print_maze(build_maze(20, 45, ['candy corn', 'werewolf', 'pumpkin']))
+            if explore_i < 0 or explore_j < 0 or explore_i >= len(grid) or explore_j >= len(grid[0]):
+                continue
+            elif grid_copy[explore_i][explore_j] != 'visited' and grid_copy[explore_i][explore_j] != 'wall':
+                bfs_queue.append([explore_i, explore_j])
+    grid[i][j] = 'End'
+
+
+print_maze(build_maze(20, 60, ['candy', 'werewolf']))
+
