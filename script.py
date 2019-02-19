@@ -7,10 +7,12 @@ def build_maze(m, n, swag):
         row = []
         for j in range(n):
             row.append("wall")
-            grid.append(row)
+        grid.append(row)
     start_i = randint(0, m - 1)
     start_j = randint(0, n - 1)
-    grid[randint(0, m-1)][randint(0, n-1)] = 'empty'
+    grid[randint(0, m - 1)][randint(0, n - 1)] = 'empty'
+    mow(grid, start_i, start_j)
+    explore_maze(grid, start_i, start_j, swag)
     return grid
 
 
@@ -19,9 +21,11 @@ def print_maze(grid):
         printable_row = ''
         for cell in row:
             if cell == 'wall':
-                char = '|'
-            else:
+                char = '/'
+            elif cell == 'emtpy':
                 char = ' '
+            else:
+                char = cell[0]
             printable_row += char
         print(printable_row)
 
@@ -59,5 +63,31 @@ def mow(grid, i, j):
                 grid[i][j + 1] = 'emtpy'
                 grid[i][j + 2] = 'emtpy'
                 mow(grid, i, j + 2)
-                
-print_maze(build_maze(5, 10, None))
+
+
+def explore_maze(grid, start_i, start_j, swag):
+    grid_copy = [row[:] for row in grid]
+    bfs_queue = [[start_i, start_j]]
+    directions = ['U', 'D', 'L', 'R']
+    while bfs_queue:
+        i, j = bfs_queue.pop(0)
+        if grid[i][j] != 'start' and randint(1, 10) == 1:
+            grid[i][j] = swag[randint(0, len(swag) - 1)]
+            grid_copy[i][j] = 'visited'
+        for direction in directions:
+            explore_i = i
+            explore_j = j
+            if direction == 'U':
+                explore_i = i - 1
+            elif direction == 'D':
+                explore_i = i + 1
+            elif direction == 'L':
+                explore_j = j - 1
+            else:
+                explore_j = j + 1
+        if explore_i < 0 or explore_j < 0 or explore_i >= len(grid) or explore_j >= len(grid[0]):
+            continue
+        elif grid_copy[explore_i][explore_j] != 'visited' and grid_copy[explore_i][explore_j] != 'wall':
+            bfs_queue.append([explore_i, explore_j])
+        grid[i][j] = 'end'
+print_maze(build_maze(20, 45, ['candy corn', 'werewolf', 'pumpkin']))
